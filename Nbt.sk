@@ -1,0 +1,33 @@
+function nbtSet(p:object,key:string,obj:string):
+    if {_obj} parsed as a number is a number:
+        set (double tag "custom;%{_key}%" of nbt of {_p}) to ({_obj} parsed as a number)
+    else:
+        set (string tag "custom;%{_key}%" of nbt of {_p}) to {_obj}
+function nbtGet(p:object,key:string) :: string:
+    if (double tag "custom;%{_key}%" of nbt of {_p}) is set:
+        set {_tag} to (double tag "custom;%{_key}%" of nbt of {_p})
+        return "%{_tag}%"
+    else if (string tag "custom;%{_key}%" of nbt of {_p}) is set:
+        return (string tag "custom;%{_key}%" of nbt of {_p})
+    else:
+        send "Error with NBT %{_key}% on subject %{_p}%" to all ops
+function nbtDelete(p:object,key:string):
+    if (double tag "custom;%{_key}%" of nbt of {_p}) is set:
+        delete (double tag "custom;%{_key}%" of nbt of {_p})
+    else if (string tag "custom;%{_key}%" of nbt of {_p}) is set:
+        delete (string tag "custom;%{_key}%" of nbt of {_p})
+    else:
+        send "Error with NBT %{_key}% on subject %{_p}%" to all ops
+
+# These functions only work on PLAYER NBT. to put shit on items u gotta do 
+# whats shown below
+command /testnbt:
+    trigger:
+        # for players
+        nbtSet("KingHenry6666" parsed as offlineplayer, "test", "1")
+        send nbtGet("KingHenry6666" parsed as offlineplayer, "test") parsed as a number to console
+        nbtDelete("KingHenry6666" parsed as offlineplayer, "test")
+        set (string tag "custom;rarity" of nbt of player's held item) to "Mythic"
+        send (string tag "custom;rarity" of nbt of player's held item)
+        delete (string tag "custom;rarity" of nbt of player's held item)
+        
