@@ -1,0 +1,84 @@
+function MakeQuality(origname: text) :: text:
+    set {_name} to (string tag "custom;name" of nbt of {%{_origname}%})
+    if (string tag "custom;rarity" of nbt of {%{_origname}%}) is "Admin":
+        set {_prefix} to "&4"
+    if (string tag "custom;rarity" of nbt of {%{_origname}%}) is "Premium":
+        set {_prefix} to "&e"
+    if (string tag "custom;rarity" of nbt of {%{_origname}%}) is "Mythic":
+        set {_prefix} to "&c"
+    if (string tag "custom;rarity" of nbt of {%{_origname}%}) is "Legendary":
+        set {_prefix} to "&6"
+    if (string tag "custom;rarity" of nbt of {%{_origname}%}) is "Epic":
+        set {_prefix} to "&d"
+    if (string tag "custom;rarity" of nbt of {%{_origname}%}) is "Rare":
+        set {_prefix} to "&b"
+    if (string tag "custom;rarity" of nbt of {%{_origname}%}) is "Uncommon":
+        set {_prefix} to "&f"
+    if (string tag "custom;rarity" of nbt of {%{_origname}%}) is "Common":
+        set {_prefix} to "&7"
+    set {_quality} to random integer between 1 and 100
+    if {_quality} is 1:
+        send "Perfect" to all players
+        return "<##FF0000>&lP<##FF7F00>&le<##FFFF00>&lr<##00FF00>&lf<##0000FF>&le<##4A00E9>&lc<##9400D3>&lt &7| %{_prefix}%&l%{_name}%"
+    else if {_quality} is between 2 and 4:
+        return "&bExceptional &7| %{_prefix}%%{_name}%"
+    else if {_quality} is between 5 and 72:
+        return "&fNormal &7| %{_prefix}%%{_name}%"
+    else if {_quality} is between 73 and 85:
+        return "<##ee0000>Poor &7| %{_prefix}%%{_name}%"
+    else if {_quality} is between 86 and 94:
+        return "&4Broken &7| %{_prefix}%%{_name}%"
+    else if {_quality} is between 95 and 100:
+        return "<##550000>Abysmal &7| %{_prefix}%%{_name}%"
+    else:
+        return "&fUnknown %{_name}%"
+command /quality:
+    trigger:
+        set {TestSword} to unbreakable wooden sword named "Test Sword"
+        set (string tag "custom;name" of nbt of {TestSword}) to "Test Sword"
+        set (string tag "custom;rarity" of nbt of {TestSword}) to "Common"
+        give player 1 of {TestSword} named MakeQuality("TestSword")
+        set {TestSword} to unbreakable wooden sword named "Test Sword"
+        set (string tag "custom;name" of nbt of {TestSword}) to "Test Sword"
+        set (string tag "custom;rarity" of nbt of {TestSword}) to "Uncommon"
+        give player 1 of {TestSword} named MakeQuality("TestSword")
+        set {TestSword} to unbreakable wooden sword named "Test Sword"
+        set (string tag "custom;name" of nbt of {TestSword}) to "Test Sword"
+        set (string tag "custom;rarity" of nbt of {TestSword}) to "Rare"
+        give player 1 of {TestSword} named MakeQuality("TestSword")
+        set {TestSword} to unbreakable wooden sword named "Test Sword"
+        set (string tag "custom;name" of nbt of {TestSword}) to "Test Sword"
+        set (string tag "custom;rarity" of nbt of {TestSword}) to "Epic"
+        give player 1 of {TestSword} named MakeQuality("TestSword")
+        set {TestSword} to unbreakable wooden sword named "Test Sword"
+        set (string tag "custom;name" of nbt of {TestSword}) to "Test Sword"
+        set (string tag "custom;rarity" of nbt of {TestSword}) to "Legendary"
+        give player 1 of {TestSword} named MakeQuality("TestSword")
+        set {TestSword} to unbreakable wooden sword named "Test Sword"
+        set (string tag "custom;name" of nbt of {TestSword}) to "Test Sword"
+        set (string tag "custom;rarity" of nbt of {TestSword}) to "Mythic"
+        give player 1 of {TestSword} named MakeQuality("TestSword")
+command /testquality:
+    trigger:
+        loop 1000 times:
+            set {_quality} to random integer between 1 and 100
+            if {_quality} is 1:
+                add 1 to {_Perfect}
+            else if {_quality} is between 2 and 4:
+                add 1 to {_Exeptional}
+            else if {_quality} is between 5 and 74:
+                add 1 to {_Normal}
+            else if {_quality} is between 75 and 86:
+                add 1 to {_Poor}
+            else if {_quality} is between 87 and 94:
+                add 1 to {_Broken}
+            else if {_quality} is between 95 and 100:
+                add 1 to {_Abysmal}
+            else:
+                send "&e&lERROR ERROR ERROR"
+        send "<##550000>Abysmal: %{_Abysmal}%"
+        send "&4Broken: %{_Broken}%"
+        send "<##ee0000>Poor: %{_Poor}%"
+        send "&fNormal: %{_Normal}%"
+        send "&bExeptional: %{_Exeptional}%"
+        send "&dPerfect: %{_Perfect}%"
