@@ -1,0 +1,58 @@
+command /part2 <number>:
+    trigger:
+        loop 360 times:
+            set {_v} to spherical vector radius arg-1, yaw loop-value*10 +90, pitch loop-value
+            set {_v2} to vector from (location 1 meter above player ~ {_v}) to location 1 meter above player
+            draw 0 of end rod at location 1 meter above player ~ {_v} with offset {_v2} with extra 0.01 with force
+command /part <number>:
+    trigger:
+        loop 36 times:
+            set {_v} to spherical vector radius arg-1, yaw loop-value*10, pitch 0
+            set {_v2} to vector from (location of player ~ {_v}) to location of player
+            draw 0 of end rod at location of player ~ {_v} with offset {_v2} with extra 0.1 with force
+command /testpart <number>:
+    trigger:
+        VC(player, location of player, end rod, arg-1, 0.1, 0.5)
+function VC(p: entity, loc: location, part: particle, spacing: num, speed: number, radius: num = 0.1):
+    set {_yaw} to {_p}'s yaw
+    set {_pitch} to {_p}'s pitch
+    set {_absolute-pitch} to abs({_pitch})
+    set {_pitch-multiplier} to 1+{_absolute-pitch}/50/{_speed}
+    velocityCircle({_p}, {_radius}, {_loc}, {_part}, {_spacing}, {_yaw}, {_pitch}, {_speed}*{_pitch-multiplier})
+function velocityCircle(p: entity, radius: number, loc: location, par: particle, space: number=1, yaw: number=0, pitch: number=0, spd: number = 0):
+    set {_yaw} to {_p}'s yaw + 90
+    set {_pitch} to {_p}'s pitch*-1
+    set {_v1} to vector from yaw {_yaw} and pitch {_pitch}
+    set {_v2} to {_v1}
+    add 90 to yaw of {_v2}
+    set vector length of {_v1} to {_radius}
+    loop (60 / {_space}) times:
+        rotate {_v1} around {_v2} by {_space}*6
+        draw 0 of {_par} at {_loc} with offset {_v1} with extra {_spd} with force
+function VGC(loc: location, radius: num, lvm: int, part: particle, spd: number = 0, horizontal: boolean = false):
+    loop 360/{_lvm} times:
+        if {_horizontal} = false:
+            set {_v} to spherical vector radius {_radius}, yaw (loop-value*{_lvm}), pitch 0
+        else:
+            set {_v} to spherical vector radius {_radius}, yaw 0, pitch (loop-value*{_lvm})
+        draw 0 {_part} at {_loc} with offset {_v} with extra {_spd} with force
+function circle(loc: location, radius: num, lvm: int, addedYaw: num = 0) :: locations:
+    loop 360/{_lvm} times:
+        set {_v} to spherical vector radius {_radius}, yaw (loop-value*{_lvm})+{_addedYaw}, pitch 0
+        add {_loc} ~ {_v} to {_locs::*}
+    return {_locs::*}
+command /vgc:
+    trigger:
+        VGC(location 1 meter above player, 3, 10, end rod, 0.1, true)
+        VGC(location 1 meter above player, 3, 10, end rod, 0.1, false)
+command /vc <number>:
+    trigger:
+        set {_yaw} to 90
+        set {_pitch} to -45
+        set {_v1} to vector from yaw {_yaw} and pitch {_pitch}
+        set {_v2} to {_v1}
+        add 90 to yaw of {_v2}
+        set vector length of {_v1} to arg-1
+        loop 60 times:
+            rotate {_v1} around {_v2} by 6
+            draw 0 of end rod at location 1 meter above player with offset {_v1} with extra 0.1 with force

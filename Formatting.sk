@@ -1,0 +1,40 @@
+function formatNum(n: number) :: text:
+    if {_n} >= 1000:
+        set {_exponent} to 0
+        set {_num} to {_n}
+        loop 100 times:
+            if {_num} >= 10:
+                set {_num} to {_num} / 10
+                add 1 to {_exponent}
+            else if {_num} < 1:
+                if {_num} != 0:
+                    set {_num} to {_num} * 10
+                    subtract 1 from {_exponent}
+            else:
+                exit loop
+        return "%scienceToNorm({_num}, {_exponent})%"
+    else:
+        return "%{_n}%"
+function scienceToNorm(num: number, e: number):: text:
+    set {_a} to 3
+    set {_b} to 4
+    set {_c} to 5
+    loop 100 times:
+        if {_e} is {_a} or {_b} or {_c}:
+            if {_e} = {_b}:
+                set {_num} to {_num} * 10
+            if {_e} = {_c}:
+                set {_num} to {_num} * 100
+          #  set {_f::*} to "k", "M", "B", "T", "q", "Q", "s", "S", "O", "N", "d", "U", "D", "Td", "qd", "Qd", "sd", "Sd"
+            set {_f::*} to "k", "M", "B", "T", "q", "Q", "s", "S", "O", "N", "d", "U", "D", "Td", "qd", "Qd", "sd", "Sd", "O", "N", "v", "Uv", "Dv", "Tv", "qv", "Qv", "sv", "Sv", "Ov", "Nv", "Tg"
+            set {_e} to {_f::%loop-number%}
+        add 3 to {_a} and {_b} and {_c}
+    return "%{_num}%%{_e}%"
+
+command /format:
+    trigger:
+        send formatNum(100) to player
+        send formatNum(1000) to player
+        send formatNum(1000000) to player
+        send formatNum(1000000000) to player
+        send formatNum(100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000) to player
