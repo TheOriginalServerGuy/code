@@ -12,16 +12,18 @@ on load:
 command /skilltree:
     aliases: skilltrees, skills
     trigger:
-        create a gui with virtual chest inventory with 6 rows named "Skills":
-            loop all integers between 0 and 53:
-                make gui loop-integer with black stained glass pane named " "
-            if {Skill::Combat::%player's uuid%} is not set:
-                make gui 1 with {Combat}:
-                    CombatSkillTree(player)
-            else:
-                make gui 1 with {Combat} named "&e&lCombat %FormatSkill({Level::Combat::%player's uuid%}, "level")%" with lore "&7Master the art of combat and slay your enemies!", " ", "&cUrmom &7to Combat %FormatSkill({Level::Combat::%player's uuid%}, "level")%":
-                    CombatSkillTree(player)
-            open last gui to player
+        SkillsMenu(player)
+function SkillsMenu(p:player):
+    create a gui with virtual chest inventory with 6 rows named "Skills":
+        loop all integers between 0 and 53:
+            make gui loop-integer with black stained glass pane named " "
+        if {Skill::Combat::%{_p}'s uuid%} is not set:
+            make gui 19 with {Combat}:
+                CombatSkillTree({_p})
+        else:
+            make gui 19 with {Combat} named "&e&lCombat %FormatSkill({Level::Combat::%{_p}'s uuid%}, "level")%" with lore "&7Master the art of combat and slay your enemies!", " ", "&cUrmom &7to Combat %FormatSkill({Level::Combat::%{_p}'s uuid%}, "level")%":
+                CombatSkillTree({_p})
+        open last gui to {_p}
 function DeleteSkill(p: player):
     delete {CombatT1S1::%{_p}'s uuid%}
     delete {CombatT2S1::%{_p}'s uuid%}
@@ -41,6 +43,11 @@ function DeleteSkill(p: player):
     delete {Beacon::Combat::%{_p}'s uuid%}
     delete {Power::Combat::%{_p}'s uuid%}
     delete {Token::Combat::%{_p}'s uuid%}
+    delete {Combat2T1S1::%{_p}'s uuid%}
+    delete {Combat2T2S1::%{_p}'s uuid%}
+    delete {Combat2T3B1::%{_p}'s uuid%}
+    delete {Combat2T4S1::%{_p}'s uuid%}
+    delete {Combat2T5S1::%{_p}'s uuid%}
     send "&cYou have reset your Combat skill tree!" to {_p}
 command /givetoken:
     trigger:
@@ -76,6 +83,14 @@ function CombatSkillTree(p:player):
     create a gui with virtual chest inventory with 6 rows named "Combat":
         loop all integers between 0 and 53:
             make gui loop-integer with black stained glass pane named " "
+        if {Token::Combat::%{_p}'s uuid%} is not set:
+            make gui 51 with amethyst shard named "&eYour tokens: &60" with lore "&7Get tokens by leveling up this skill!"
+        else:
+            make gui 51 with amethyst shard named "&eYour tokens: &6%{Token::Combat::%{_p}'s uuid%}%" with lore "&7Get tokens by leveling up this skill!"
+        make gui 53 with barrier named "&4RESET Skill Tree &c(Permanent)" with lore "&7You will lose all progress but your tokens will be refunded!", " ", "&cCost: Placehoolder":
+            # Price
+            DeleteSkill({_p})
+            CombatSkillTree({_p})
         if {CombatT1S1::%{_p}'s uuid%} is true:
             make gui 49 with gold nugget named "&aCombo" with lore "&7Every 5 hits, knock your enemy back!", " ", "&aUnlocked"
         else:
@@ -151,7 +166,7 @@ function CombatSkillTree(p:player):
                 {CombatT2S1::%{_p}'s uuid%} is true
                 if {Token::Combat::%{_p}'s uuid%} is greater than 0:
                     subtract 1 from {Token::Combat::%{_p}'s uuid%}
-                    set {TCombat3B2::%{_p}'s uuid%} to true
+                    set {CombatT3B2::%{_p}'s uuid%} to true
                     # Play sounds
                     send "&aYou have unlocked Ability 3x2!" to {_p}
                     CombatSkillTree({_p})
@@ -232,32 +247,32 @@ function CombatSkillTree(p:player):
             make gui 10 with gold nugget named "&aCombo XI" with lore "&7Hits to trigger Combo: 0 --> 0", " ", "&aUnlocked"
         else:
             make gui 10 with coal named "&aCombo XI" with lore "&7Hits to trigger Combo: 0 --> 0!", " ", "&6Cost: 1 token":
-                {T4S1::%{_p}'s uuid%} is true
+                {CombatT4S1::%{_p}'s uuid%} is true
                 if {Token::Combat::%{_p}'s uuid%} is greater than 0:
                     subtract 1 from {Token::Combat::%{_p}'s uuid%}
                     set {CombatT5S1::%{_p}'s uuid%} to true
                     # Play sounds
                     send "&aYou have unlocked Combo XI!" to {_p}
                     CombatSkillTree({_p})
-        if {T5S2::%{_p}'s uuid%} is true:
+        if {CombatT5S2::%{_p}'s uuid%} is true:
             make gui 13 with gold nugget named "&aCombo XII" with lore "&7Hits to trigger Combo: 0 --> 0", " ", "&aUnlocked"
         else:
             make gui 13 with coal named "&aCombo XII" with lore "&7Hits to trigger Combo: 0 --> 0!", " ", "&6Cost: 1 token":
-                {T4S2::%{_p}'s uuid%} is true
+                {CombatT4S2::%{_p}'s uuid%} is true
                 if {Token::Combat::%{_p}'s uuid%} is greater than 0:
                     subtract 1 from {Token::Combat::%{_p}'s uuid%}
-                    set {T5S2::%{_p}'s uuid%} to true
+                    set {CombatT5S2::%{_p}'s uuid%} to true
                     # Play sounds
                     send "&aYou have unlocked Combo XII!" to {_p}
                     CombatSkillTree({_p})
-        if {T5S3::%{_p}'s uuid%} is true:
+        if {CombatT5S3::%{_p}'s uuid%} is true:
             make gui 16 with gold nugget named "&aCombo XIII" with lore "&7Hits to trigger Combo: 0 --> 0", " ", "&aUnlocked"
         else:
             make gui 16 with coal named "&aCombo XIII" with lore "&7Hits to trigger Combo: 0 --> 0!", " ", "&6Cost: 1 token":
-                {T4S3::%{_p}'s uuid%} is true
+                {CombatT4S3::%{_p}'s uuid%} is true
                 if {Token::Combat::%{_p}'s uuid%} is greater than 0:
                     subtract 1 from {Token::Combat::%{_p}'s uuid%}
-                    set {T5S3::%{_p}'s uuid%} to true
+                    set {CombatT5S3::%{_p}'s uuid%} to true
                     # Play sounds
                     send "&aYou have unlocked Combo XIII!" to {_p}
                     CombatSkillTree({_p})
@@ -266,9 +281,9 @@ function CombatSkillTree(p:player):
                 CombatSkillTree2({_p})
         else:
             make gui 4 with beacon named "&bPlaceholder" with lore "&7Requires the skill tree to be maxed out!", " ", "&cLocked"
-            {T5S1::%{_p}'s uuid%} is true
-            {T5S2::%{_p}'s uuid%} is true
-            {T5S3::%{_p}'s uuid%} is true
+            {CombatT5S1::%{_p}'s uuid%} is true
+            {CombatT5S2::%{_p}'s uuid%} is true
+            {CombatT5S3::%{_p}'s uuid%} is true
             make gui 4 with beacon named "&bPlaceholder" with lore "&7Unlocks the next page!", " ", "&6Cost: 2 tokens":
                 if {Token::Combat::%{_p}'s uuid%} is greater than 1:
                     subtract 2 from {Token::Combat::%{_p}'s uuid%}
@@ -281,6 +296,73 @@ function CombatSkillTree2(p:player):
     create a gui with virtual chest inventory with 6 rows named "Combat":
         loop all integers between 0 and 53:
             make gui loop-integer with black stained glass pane named " "
-        make gui 39 with beacon named "&bPlaceholder" with lore "&7Click this to go back to the previous page!", " ", "&aUnlocked":
+            make gui 51 with amethyst shard named "&eYour tokens: &6%{Token::Combat::%{_p}'s uuid%}%" with lore "&7Get tokens by leveling up this skill!"
+        make gui 53 with barrier named "&4RESET Skill Tree &c(Permanent)" with lore "&7You will lose all progress but your tokens will be refunded!", " ", "&cCost: Placehoolder":
+            # Price
+            DeleteSkill({_p})
             CombatSkillTree({_p})
-        if 
+        make gui 49 with beacon named "&bPlaceholder" with lore "&7Click this to go back to the previous page!", " ", "&aUnlocked":
+            CombatSkillTree({_p})
+        if {Combat2T1S1::%{_p}'s uuid%} is true:
+            make gui 40 with gold nugget named "&aPlaceholder" with lore "&7Urmom", " ", "&aUnlocked"
+        else:
+            make gui 40 with coal named "&aPlaceholder" with lore "&7Urmom", " ", "&6Cost: 1 token":
+                if {Token::Combat::%{_p}'s uuid%} is greater than 0:
+                    subtract 1 from {Token::Combat::%{_p}'s uuid%}
+                    set {Combat2T1S1::%{_p}'s uuid%} to true
+                    # Play sounds
+                    send "&aYou have unlocked Ability 1!" to {_p}
+                    CombatSkillTree2({_p})
+        if {Combat2T2S1::%{_p}'s uuid%} is true:
+            make gui 31 with gold nugget named "&aPlaceholder" with lore "&7Urmom", " ", "&aUnlocked"
+        else:
+            make gui 31 with coal named "&aPlaceholder" with lore "&7Urmom", " ", "&6Cost: 1 token":
+                {Combat2T1S1::%{_p}'s uuid%} is true
+                if {Token::Combat::%{_p}'s uuid%} is greater than 0:
+                    subtract 1 from {Token::Combat::%{_p}'s uuid%}
+                    set {Combat2T2S1::%{_p}'s uuid%} to true
+                    # Play sounds
+                    send "&aYou have unlocked Ability 2!" to {_p}
+                    CombatSkillTree2({_p})
+        if {Combat2T3B1::%{_p}'s uuid%} is true:
+            if {Power::Combat::%{_p}'s uuid%} is "Placeholder 5x1":
+                make gui 22 with glowstone named "&aPlaceholder 5x1" with lore "&7Urmom", " ", "&aEquipped":
+                    delete {Power::Combat::%{_p}'s uuid%}
+                    CombatSkillTree2({_p})
+            else:
+                make gui 22 with emerald block named "&aPlaceholder 5x1" with lore "&7Urmom", " ", "&aUnlocked":
+                    set {Power::Combat::%{_p}'s uuid%} to "Placeholder 5x1"
+                    CombatSkillTree2({_p})
+        else:
+            make gui 22 with redstone block named "&aPlaceholder 5x1" with lore "&7Urmom", " ", "&6Cost: 1 token":
+                {Combat2T2S1::%{_p}'s uuid%} is true
+                if {Token::Combat::%{_p}'s uuid%} is greater than 0:
+                    subtract 1 from {Token::Combat::%{_p}'s uuid%}
+                    set {Combat2T3B1::%{_p}'s uuid%} to true
+                    # Play sounds
+                    send "&aYou have unlocked Ability 3x1!" to {_p}
+                    CombatSkillTree2({_p})
+        if {Combat2T4S1::%{_p}'s uuid%} is true:
+            make gui 13 with gold nugget named "&aPlaceholder" with lore "&7Urmom", " ", "&aUnlocked"
+        else:
+            make gui 13 with coal named "&aPlaceholder" with lore "&7Urmom", " ", "&6Cost: 1 token":
+                {Combat2T3B1::%{_p}'s uuid%} is true
+                if {Token::Combat::%{_p}'s uuid%} is greater than 0:
+                    subtract 1 from {Token::Combat::%{_p}'s uuid%}
+                    set {Combat2T4S1::%{_p}'s uuid%} to true
+                    # Play sounds
+                    send "&aYou have unlocked Ability 4!" to {_p}
+                    CombatSkillTree2({_p})
+        if {Combat2T5S1::%{_p}'s uuid%} is true:
+            make gui 4 with gold nugget named "&aPlaceholder" with lore "&7Urmom", " ", "&aUnlocked"
+        else:
+            make gui 4 with coal named "&aPlaceholder" with lore "&7Urmom", " ", "&6Cost: 1 token":
+                {Combat2T4S1::%{_p}'s uuid%} is true
+                if {Token::Combat::%{_p}'s uuid%} is greater than 0:
+                    subtract 1 from {Token::Combat::%{_p}'s uuid%}
+                    set {Combat2T5S1::%{_p}'s uuid%} to true
+                    # Play sounds
+                    send "&aYou have unlocked Ability 5!" to {_p}
+                    CombatSkillTree2({_p})
+        open last gui to {_p}
+        
