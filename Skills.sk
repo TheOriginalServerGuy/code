@@ -1,5 +1,6 @@
 on load:
     set {Combat} to diamond sword named "&e&lCombat &80"
+    add hide attributes to item flags of {Combat}
     set line 1 of lore of {Combat} to "&7Master the art of combat and slay your enemies!"
     set line 2 of lore of {Combat} to " "
     set line 3 of lore of {Combat} to "&40%% &7to Combat &81"
