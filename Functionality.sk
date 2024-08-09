@@ -40,11 +40,29 @@ on damage:
             exit trigger
     subtract 1 from {Hits::%attacker%}
     if {Hits::%attacker%} < 0:
-        push victim backwards at speed 3
-        set {_dmg} to {_dmg} * 2
-        delete {Hits::%attacker%}
-        send "Boom!" to attacker
-    damage victim by {_dmg}
+        if {Power::Combat::%attacker's uuid%} is set:
+            if {Power::Combat::%attacker's uuid%} is "Pull":
+                push victim towards attacker at speed 3
+                set {_dmg} to 0
+                delete {Hits::%attacker%}
+                send "Boom!" to attacker
+            else if {Power::Combat::%attacker's uuid%} is "Uppercut":
+                push victim upwards at speed 3
+                set {_dmg} to {_dmg} * 2
+                delete {Hits::%attacker%}
+                send "Boom!" to attacker
+            else if {Power::Combat::%attacker's uuid%} is "Fury":
+                set {_dmg} to {_dmg} * 3
+                delete {Hits::%attacker%}
+                send "Boom!" to attacker
+            else:
+                send "INVALID POWER" to all players
+        else:
+            push victim backwards at speed 3
+            set {_dmg} to {_dmg} * 2
+            delete {Hits::%attacker%}
+            send "Boom!" to attacker
+    set damage to {_dmg}
 command /workplz:
     trigger:
         send "%{Hits::%player%}%" to player
