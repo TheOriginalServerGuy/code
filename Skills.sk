@@ -13,15 +13,36 @@ command /skilltree:
     aliases: skilltrees, skills
     trigger:
         SkillsMenu(player)
+command /testlevel <number>:
+    trigger:
+        send "%getLevel(arg-1)%" to player
+command /testxp <number>:
+    trigger:
+        send "%CalcXP(arg-1)%" to player
+function CalcXP(level: integer) :: integer:
+    set {_return} to ceil(100 + ({_level} * 2000) + (100 * ({_level} ^ 1.1) * 0.2))
+    return {_return}
+function getLevel(p: integer) :: integer:
+    set {_level} to -1
+    set {_accumulatedXP} to 0
+    while {_accumulatedXP} <= {_p}:
+        set {_requiredXP} to ceil(100 + ({_level} * 2000) + (100 * ({_level} ^ 1.1) * 0.2))
+        set {_accumulatedXP} to {_requiredXP}
+        if {_accumulatedXP} <= {_p}:
+            add 1 to {_level}
+    return {_level}
 function SkillsMenu(p:player):
     create a gui with virtual chest inventory with 6 rows named "Skills":
         loop all integers between 0 and 53:
             make gui loop-integer with black stained glass pane named " "
-        if {Skill::Combat::%{_p}'s uuid%} is not set:
+        if {XP::Combat::%{_p}'s uuid%} is not set:
             make gui 19 with {Combat}:
                 CombatSkillTree({_p})
         else:
-            make gui 19 with {Combat} named "&e&lCombat %FormatSkill({Level::Combat::%{_p}'s uuid%}, "level")%" with lore "&7Master the art of combat and slay your enemies!", " ", "&cUrmom &7to Combat %FormatSkill({Level::Combat::%{_p}'s uuid%}, "level")%":
+            set {_lvl} to getLevel({XP::Combat::%{_p}'s uuid%})
+            set {_xp} to CalcXP({_lvl})
+            set {_percent} to ({XP::Combat::%{_p}'s uuid%} / {_xp}) * 100
+            make gui 19 with {Combat} named "&e&lCombat %FormatSkill({_lvl}, "level")%" with lore "&7Master the art of combat and slay your enemies!", " ", "%FormatSkill({_percent}, "percent")%%% &7to Combat %FormatSkill(({_lvl}+1), "level")%":
                 CombatSkillTree({_p})
         open last gui to {_p}
 function DeleteSkill(p: player):
