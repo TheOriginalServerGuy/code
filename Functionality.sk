@@ -42,28 +42,30 @@ on damage:
     if {Hits::%attacker%} < 0:
         if {Power::Combat::%attacker's uuid%} is set:
             if {Power::Combat::%attacker's uuid%} is "Pull":
-                push victim towards attacker at speed 3
+                set {_v} to vector between victim and attacker
+                push victim {_v} with speed 2
                 set {_dmg} to 0
                 delete {Hits::%attacker%}
-                send "Boom!" to attacker
+                send "Pull!" to attacker
             else if {Power::Combat::%attacker's uuid%} is "Uppercut":
-                push victim upwards at speed 3
+                set {_v} to vector between victim and location 20 meters above victim
+                push victim {_v} at force 3
                 set {_dmg} to {_dmg} * 2
                 delete {Hits::%attacker%}
-                send "Boom!" to attacker
+                send "Uppercut!" to attacker
             else if {Power::Combat::%attacker's uuid%} is "Fury":
                 set {_dmg} to {_dmg} * 3
                 delete {Hits::%attacker%}
-                send "Boom!" to attacker
+                send "Fury!" to attacker
             else:
                 send "INVALID POWER" to all players
         else:
-            push victim backwards at speed 3
+            set {_v} to vector between attacker and victim
+            push victim {_v} at speed 3
             set {_dmg} to {_dmg} * 2
             delete {Hits::%attacker%}
             send "Boom!" to attacker
     set damage to {_dmg}
 command /workplz:
     trigger:
-        send "%{Hits::%player%}%" to player
-        send "%{Hit::%player%}%" to player
+        send {Power::Combat::%player's uuid%} to player
