@@ -1,0 +1,51 @@
+function CalcDmg(base: number, str: number, def: number, qual: number) :: number:
+    if {_qual} is 1:
+        set {_qualmult} to 0.5
+    else if {_qual} is 2:
+        set {_qualmult} to 0.6
+    else if {_qual} is 3:
+        set {_qualmult} to 0.7
+    else if {_qual} is 4:
+        set {_qualmult} to 1
+    else if {_qual} is 5:
+        set {_qualmult} to 1.35
+    else if {_qual} is 6:
+        set {_qualmult} to 1.5
+    else:
+        send "ERROR INVALID QUALITY" to all players
+    set {_dmg} to {_base} * {_qualmult} + ({_base} * {_qualmult} * {_str}/100)
+    set {_findmg} to ({_dmg} * (1 - ((log(0.15 * {_def} + 1)) / (log(0.15 * {_def} + 1) + 10))))
+    # IF BASE DAMAGE IS IN HERATS THEN DELETE THIS LINE
+    set {_findmg} to {_findmg} / 2
+    # IF BASE DAMAGE IS IN HERATS THEN DELETE THIS LINE
+    return {_findmg}
+on damage:
+    attacker is a player
+    if difference between now and {Hit::%attacker%} is less than 2 seconds:
+        set {Hit::%attacker%} to now
+    else if {CombatT1S1::%attacker's uuid%} is set:
+        delete {Hits::%attacker%}
+        set {Hit::%attacker%} to now
+    if attacker's held item is not air:
+        # Stuff for later
+    else:
+        set {_dmg} to 0.5
+    if {Hits::%attacker%} is not set:
+        if {CombatT1S1::%attacker's uuid%} is set:
+            set {_hits} to 5
+            if {CombatT2S1::%attacker's uuid%} is set:
+                set {_hits} to 3
+            set {Hits::%attacker%} to {_hits}
+        else:
+            exit trigger
+    subtract 1 from {Hits::%attacker%}
+    if {Hits::%attacker%} < 0:
+        push victim backwards at speed 3
+        set {_dmg} to {_dmg} * 2
+        delete {Hits::%attacker%}
+        send "Boom!" to attacker
+    damage victim by {_dmg}
+command /workplz:
+    trigger:
+        send "%{Hits::%player%}%" to player
+        send "%{Hit::%player%}%" to player
