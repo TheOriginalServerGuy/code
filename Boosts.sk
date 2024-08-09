@@ -1,0 +1,116 @@
+command /boosters:
+    aliases: boosttime
+    trigger:
+        if {XpBoost} is set:
+            send "&bXP Booster: %{XpBoost}% minutes left!"
+        else:
+            send "&bXp Booster not active"
+        if {OddsBoost} is set:
+            send "&aOdds Booster: %{OddsBoost}% minutes left!"
+        else:
+            send "&aOdds Booster not active"
+command /boostxp <number> [<text>]:
+    permission: op
+    trigger:
+        if arg-2 is set:
+            BoostXP(arg-2, arg-1)
+        else:
+            BoostXP("%player%", arg-1)
+command /boostodds <number> [<text>]:
+    permission: op
+    trigger:
+        if arg-2 is set:
+            BoostOdds(arg-2, arg-1)
+        else:
+            BoostOdds("%player%", arg-1)
+every 1 minute:
+    set {OldXP} to {XpBoost}
+    set {OldOdds} to {OddsBoost}
+    if {OldXP} is 1:
+        delete {XpBoost}
+        send "&bThe XP Boost has ended!" to all players
+    if {OldOdds} is 1:
+        delete {OddsBoost}
+        send "&bThe Odds Boost has ended!" to all players
+    if {XpBoost} is greater than 0:
+        remove 1 from {XpBoost}
+    if {OddsBoost} is greater than 0:
+        remove 1 from {OddsBoost}
+function BoostXP(b:text, n:number):
+    if {_n} is 120:
+        if {XpBoost} is set:
+            add {_n} to {XpBoost}
+            send "&b&l%{_b}% has used their daily MVP XP Booster for 120 minutes! &7/buy" to all players
+        else:
+            set {XpBoost} to {_n}
+            send "&b&l%{_b}% has used their daily MVP XP Booster for 120 minutes! &7/buy" to all players
+    else if {_n} is 60:
+        if {XpBoost} is set:
+            add {_n} to {XpBoost}
+            send "&b%{_b}% has used their daily VIP XP Booster for 60 minutes! &7/buy" to all players
+        else:
+            set {XpBoost} to {_n}
+            send "&b&l%{_b}% has used their daily VIP XP Booster for 60 minutes! &7/buy" to all players
+    else:
+        set {XpBoost} to {_n}
+        send "&b%{_n}% minutes of XP Boost bought to you by the owners. Enjoy!" to all players
+function BoostOdds(b:text, n:number):
+    if {_n} is 120:
+        if {OddsBoost} is set:
+            add {_n} to {OddsBoost}
+            send "&a&l%{_b}% has used their daily MVP Odds Booster for 120 minutes! &7/buy" to all players
+        else:
+            set {OddsBoost} to {_n}
+            send "&a&l%{_b}% has used their daily MVP Odds Booster for 120 minutes! &7/buy" to all players
+    else if {_n} is 60:
+        if {OddsBoost} is set:
+            add {_n} to {OddsBoost}
+            send "&a%{_b}% has used their daily VIP Odds Booster for 60 minutes! &7/buy" to all players
+        else:
+            set {OddsBoost} to {_n}
+            send "&a&l%{_b}% has used their daily VIP Odds Booster for 60 minutes! &7/buy" to all players
+    else:
+        set {OddsBoost} to {_n}
+        send "&a%{_n}% minutes of Odds Boost bought to you by the owners. Enjoy!" to all players
+command /boost:
+    trigger:
+        if {Mvp::*} contains player:
+            MvpMenu(player)
+        else if {Vip::*} contains player:
+            VipMenu(player)
+        else:
+            send "&aYou need a rank to boost!"
+function MvpMenu(m:player):
+    create a gui with virtual chest inventory with 1 rows named "&7Warps Menu":
+        loop all integers between 0 and 8:
+            make gui loop-integer with light blue stained glass pane named ""
+        make gui 2 with experience bottle named "&bBoost XP 120 minutes" with lore "&f24h Cooldown":
+            if difference between now and {Boost::%player's uuid%::XP} is less than 24 hours:
+                send "&bYou can boost XP again in &c%difference between difference between now and {Boost::%player's uuid%::XP} and 24 hours%" to player
+            else:
+                set {Boost::%player's uuid%::XP} to now
+                BoostXP({_m},120)
+        make gui 6 with nether star named "&aBoost Odds 120 minutes" with lore "&f24h Cooldown":
+            if difference between now and {Boost::%player's uuid%::Odds} is less than 24 hours:
+                send "&bYou can boost Odds again in &c%difference between difference between now and {Boost::%player's uuid%::Odds} and 24 hours%" to player
+            else:
+                set {Boost::%player's uuid%::Odds} to now
+                BoostOdds({_m},120)
+    open last gui to {_m}
+function VipMenu(m:player):
+    create a gui with virtual chest inventory with 1 rows named "&7Warps Menu":
+        loop all integers between 0 and 8:
+            make gui loop-integer with lime stained glass pane named ""
+        make gui 2 with experience bottle named "&bBoost XP 60 minutes" with lore "&f24h Cooldown":
+            if difference between now and {Boost::%player's uuid%::XP} is less than 24 hours:
+                send "&bYou can boost XP again in &c%difference between difference between now and {Boost::%player's uuid%::XP} and 24 hours%" to player
+            else:
+                set {Boost::%player's uuid%::XP} to now
+                BoostXP({_m},60)
+        make gui 6 with nether star named "&aBoost Odds 60 minutes" with lore "&f24h Cooldown":
+            if difference between now and {Boost::%player's uuid%::Odds} is less than 24 hours:
+                send "&bYou can boost Odds again in &c%difference between difference between now and {Boost::%player's uuid%::Odds} and 24 hours%" to player
+            else:
+                set {Boost::%player's uuid%::Odds} to now
+                BoostOdds({_m},60)
+    open last gui to {_m}
